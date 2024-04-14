@@ -1,0 +1,7 @@
+#+title: Modern Tab Bar Mode
+
+* Summary
+
+* Installation
+
+This package is not on MELPA.

@@ -58,7 +58,6 @@
 (defface modern-tab-bar-separator `((t (:foreground ,modern-tab-bar-separator-color :height 1.2 :inherit modern-tab-bar)))
   "Modern tab bar separator")
 
-(defvar-local modern-tab-bar--face-remap-cookies nil)
 (defvar modern-tab-bar--original-tab-bar-separator nil)
 
 (defvar modern-tab-bar--face-remappings
@@ -67,14 +66,12 @@
     (tab-bar-tab-inactive modern-tab-bar-tab-inactive)))
 
 (defun modern-tab-bar--remap-faces ()
-  (setq modern-tab-bar--face-remap-cookies
-        (mapcar (lambda (face-remapping)
-                  (apply #'face-remap-set-base face-remapping))
-                modern-tab-bar--face-remappings)))
+  (dolist (face-remapping modern-tab-bar--face-remappings)
+    (apply #'face-remap-set-base face-remapping)))
 
-(defun modern-tab-bar--remove-face-remaps ()
-  (mapc #'face-remap-remove-relative modern-tab-bar--face-remap-cookies)
-  (setq modern-tab-bar--face-remap-cookies nil))
+(defun modern-tab-bar--remove-face-remappings ()
+  (dolist (face-remapping modern-tab-bar--face-remappings)
+    (face-remap-reset-base (car face-remapping))))
 
 (defun modern-tab-bar--format-tab (orig-fn tab i)
   (let* ((previous-tab (when (> i 1)
@@ -101,7 +98,6 @@
            (with-current-buffer buf
              (modern-tab-bar--remap-faces)))
 
-         ;; ## revert this when mode is disabled
          (setq modern-tab-bar--original-tab-bar-separator tab-bar-separator)
          (setq tab-bar-separator (propertize "|" 'face 'modern-tab-bar-separator))
 
@@ -111,7 +107,7 @@
         (t
          (dolist (buf (buffer-list))
            (with-current-buffer buf
-             (modern-tab-bar--remove-face-remaps)))
+             (modern-tab-bar--remove-face-remappings)))
 
          (setq tab-bar-separator modern-tab-bar--original-tab-bar-separator)
 

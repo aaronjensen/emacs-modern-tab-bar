@@ -1,4 +1,4 @@
-#+title: Modern Tab Bar Mode
+#+title: Modern Tab Bar
 
 * Summary
 

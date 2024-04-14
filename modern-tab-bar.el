@@ -31,10 +31,6 @@
   :group 'tools
   :prefix "modern-tab-bar-")
 
-(defcustom modern-tab-bar-separator-color "blue"
-  "Color of separator between tabs."
-  :type 'color)
-
 (defgroup modern-tab-bar-faces nil
   "Faces used by modern tab bar."
   :group 'modern-tab-bar
@@ -42,20 +38,22 @@
 
 (defface modern-tab-bar '((t (
                               :weight light
-                              :background "gray"
+                              :foreground "#000000"
+                              :background "#E0E0E0"
                               :box (:line-width (12 . 8) :color nil :style flat-button)
                               :inherit (variable-pitch default))))
   "Modern tab bar face")
 
-(defface modern-tab-bar-tab '((t (
-                              :background "white")))
+(defface modern-tab-bar-tab '((t (:background "#FFFFFF")))
   "Modern tab bar tab face")
 
-(defface modern-tab-bar-tab-inactive '((t (
-                              :foreground "red")))
+(defface modern-tab-bar-tab-inactive '((t (:foreground "#333333")))
   "Modern tab bar inactive tab face")
 
-(defface modern-tab-bar-separator `((t (:foreground ,modern-tab-bar-separator-color :height 1.2 :inherit modern-tab-bar)))
+(defface modern-tab-bar-separator '((t (
+                                        :foreground "#AEAEAE"
+                                        :height 1.2
+                                        :inherit modern-tab-bar)))
   "Modern tab bar separator")
 
 (defvar modern-tab-bar--original-tab-bar-separator nil)
@@ -83,7 +81,8 @@
                                   ((or (eq (car tab) 'current-tab)
                                        (eq (car previous-tab) 'current-tab))
                                    (propertize tab-bar-separator
-                                               'face `(:foreground ,(face-attribute 'modern-tab-bar :background))))
+                                               'face `(:inherit modern-tab-bar-separator
+                                                       :foreground ,(face-attribute 'modern-tab-bar :background))))
                                   (t
                                    tab-bar-separator))))
     (funcall orig-fn tab i)))

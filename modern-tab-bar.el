@@ -31,12 +31,19 @@
   :group 'tools
   :prefix "modern-tab-bar-")
 
+(defcustom modern-tab-bar-format '(tab-bar-format-tabs
+                                   modern-tab-bar-suffix)
+  "Format that will override `tab-bar-format'.
+
+See the documentation of `tab-bar-format' for more information."
+  :type 'sexp)
+
 (defcustom modern-tab-bar-tab-horizontal-padding 8
   "Horizontal padding for tabs."
   :type 'natnum)
 
 (defcustom modern-tab-bar-separator (propertize "|" 'face 'modern-tab-bar-separator)
-  "Horizontal padding for tabs."
+  "Separator between tabs."
   :type 'sexp)
 
 (defgroup modern-tab-bar-faces nil
@@ -66,6 +73,7 @@
 
 (defvar modern-tab-bar--original-tab-bar-separator nil)
 (defvar modern-tab-bar--original-tab-bar-tab-name-format-function nil)
+(defvar modern-tab-bar--original-tab-bar-format nil)
 
 (defvar modern-tab-bar--face-remappings
   '((tab-bar modern-tab-bar)
@@ -81,8 +89,9 @@
     (face-remap-reset-base (car face-remapping))))
 
 (defun modern-tab-bar--format-tab (orig-fn tab i)
-  (let* ((previous-tab (when (> i 1)
-                         (nth (- i 2) (funcall tab-bar-tabs-function))))
+  (let* ((tabs (funcall tab-bar-tabs-function))
+         (previous-tab (when (> i 1)
+                         (nth (- i 2) tabs)))
          (tab-bar-separator (cond ((eq 1 i)
                                    (propertize " "
                                                'face 'modern-tab-bar-separator
@@ -95,7 +104,7 @@
                                                        :foreground ,(face-attribute 'modern-tab-bar :background))))
                                   (t
                                    tab-bar-separator))))
-         (funcall orig-fn tab i)))
+    (funcall orig-fn tab i)))
 
 (defun modern-tab-bar--tab-bar-name-format (tab i)
   "Adds padding to both sides of tab names."
@@ -106,6 +115,12 @@
    (propertize " " 'display `((space :width (,modern-tab-bar-tab-horizontal-padding)))
                'face (funcall tab-bar-tab-face-function tab))))
 
+(defun modern-tab-bar-suffix ()
+    "Empty space.
+
+Ensures that the last tab's face does not extend to the end of the tab bar."
+    " ")
+
 ;;;###autoload
 (define-minor-mode modern-tab-bar-mode
   "Global minor mode that changes the style of the tab bar to look more modern."
@@ -115,6 +130,9 @@
          (dolist (buf (buffer-list))
            (with-current-buffer buf
              (modern-tab-bar--remap-faces)))
+
+         (setq modern-tab-bar--original-tab-bar-format tab-bar-format)
+         (setq tab-bar-format modern-tab-bar-format)
 
          (setq modern-tab-bar--original-tab-bar-separator tab-bar-separator)
          (setq tab-bar-separator modern-tab-bar-separator)
@@ -130,6 +148,7 @@
            (with-current-buffer buf
              (modern-tab-bar--remove-face-remappings)))
 
+         (setq tab-bar-format modern-tab-bar--original-tab-bar-format)
          (setq tab-bar-separator modern-tab-bar--original-tab-bar-separator)
          (setq tab-bar-tab-name-format-function modern-tab-bar--original-tab-bar-tab-name-format-function)
 

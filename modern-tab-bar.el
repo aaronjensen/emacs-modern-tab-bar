@@ -117,10 +117,10 @@ See the documentation of `tab-bar-format' for more information."
                'face (funcall tab-bar-tab-face-function tab))))
 
 (defun modern-tab-bar-suffix ()
-    "Empty space.
+  "Empty space.
 
 Ensures that the last tab's face does not extend to the end of the tab bar."
-    " ")
+  " ")
 
 ;;;###autoload
 (define-minor-mode modern-tab-bar-mode
@@ -161,5 +161,5 @@ Ensures that the last tab's face does not extend to the end of the tab bar."
 
          (advice-remove #'tab-bar--format-tab #'modern-tab-bar--format-tab))))
 
-(provide 'modern-tab-bar-mode)
-;;; modern-tab-bar-mode.el ends here
+(provide 'modern-tab-bar)
+;;; modern-tab-bar.el ends here

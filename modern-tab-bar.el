@@ -74,6 +74,7 @@ See the documentation of `tab-bar-format' for more information."
 (defvar modern-tab-bar--original-tab-bar-separator nil)
 (defvar modern-tab-bar--original-tab-bar-tab-name-format-function nil)
 (defvar modern-tab-bar--original-tab-bar-format nil)
+(defvar modern-tab-bar--original-tab-bar-auto-width nil)
 
 (defvar modern-tab-bar--face-remappings
   '((tab-bar modern-tab-bar)
@@ -140,6 +141,9 @@ Ensures that the last tab's face does not extend to the end of the tab bar."
          (setq modern-tab-bar--original-tab-bar-tab-name-format-function tab-bar-tab-name-format-function)
          (setq tab-bar-tab-name-format-function #'modern-tab-bar--tab-bar-name-format)
 
+         (setq modern-tab-bar--original-tab-bar-auto-width tab-bar-auto-width)
+         (setq tab-bar-auto-width nil)
+
          (add-hook 'after-change-major-mode-hook #'modern-tab-bar--remap-faces)
 
          (advice-add #'tab-bar--format-tab :around #'modern-tab-bar--format-tab))
@@ -151,6 +155,7 @@ Ensures that the last tab's face does not extend to the end of the tab bar."
          (setq tab-bar-format modern-tab-bar--original-tab-bar-format)
          (setq tab-bar-separator modern-tab-bar--original-tab-bar-separator)
          (setq tab-bar-tab-name-format-function modern-tab-bar--original-tab-bar-tab-name-format-function)
+         (setq tab-bar-auto-width modern-tab-bar--original-tab-bar-auto-width)
 
          (remove-hook 'after-change-major-mode-hook #'modern-tab-bar--remap-faces)
 

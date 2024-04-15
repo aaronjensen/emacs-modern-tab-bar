@@ -31,6 +31,14 @@
   :group 'tools
   :prefix "modern-tab-bar-")
 
+(defcustom modern-tab-bar-tab-horizontal-padding 8
+  "Horizontal padding for tabs."
+  :type 'natnum)
+
+(defcustom modern-tab-bar-separator (propertize "|" 'face 'modern-tab-bar-separator)
+  "Horizontal padding for tabs."
+  :type 'sexp)
+
 (defgroup modern-tab-bar-faces nil
   "Faces used by modern tab bar."
   :group 'modern-tab-bar
@@ -57,6 +65,7 @@
   "Modern tab bar separator")
 
 (defvar modern-tab-bar--original-tab-bar-separator nil)
+(defvar modern-tab-bar--original-tab-bar-tab-name-format-function nil)
 
 (defvar modern-tab-bar--face-remappings
   '((tab-bar modern-tab-bar)
@@ -81,11 +90,21 @@
                                   ((or (eq (car tab) 'current-tab)
                                        (eq (car previous-tab) 'current-tab))
                                    (propertize tab-bar-separator
-                                               'face `(:inherit modern-tab-bar-separator
+                                               'face `(
+                                                       :inherit modern-tab-bar-separator
                                                        :foreground ,(face-attribute 'modern-tab-bar :background))))
                                   (t
                                    tab-bar-separator))))
-    (funcall orig-fn tab i)))
+         (funcall orig-fn tab i)))
+
+(defun modern-tab-bar--tab-bar-name-format (tab i)
+  "Adds padding to both sides of tab names."
+  (concat
+   (propertize " " 'display `((space :width (,modern-tab-bar-tab-horizontal-padding)))
+               'face (funcall tab-bar-tab-face-function tab))
+   (funcall modern-tab-bar--original-tab-bar-tab-name-format-function tab i)
+   (propertize " " 'display `((space :width (,modern-tab-bar-tab-horizontal-padding)))
+               'face (funcall tab-bar-tab-face-function tab))))
 
 ;;;###autoload
 (define-minor-mode modern-tab-bar-mode
@@ -98,7 +117,10 @@
              (modern-tab-bar--remap-faces)))
 
          (setq modern-tab-bar--original-tab-bar-separator tab-bar-separator)
-         (setq tab-bar-separator (propertize "|" 'face 'modern-tab-bar-separator))
+         (setq tab-bar-separator modern-tab-bar-separator)
+
+         (setq modern-tab-bar--original-tab-bar-tab-name-format-function tab-bar-tab-name-format-function)
+         (setq tab-bar-tab-name-format-function #'modern-tab-bar--tab-bar-name-format)
 
          (add-hook 'after-change-major-mode-hook #'modern-tab-bar--remap-faces)
 
@@ -109,6 +131,7 @@
              (modern-tab-bar--remove-face-remappings)))
 
          (setq tab-bar-separator modern-tab-bar--original-tab-bar-separator)
+         (setq tab-bar-tab-name-format-function modern-tab-bar--original-tab-bar-tab-name-format-function)
 
          (remove-hook 'after-change-major-mode-hook #'modern-tab-bar--remap-faces)
 

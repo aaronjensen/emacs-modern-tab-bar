@@ -2,6 +2,31 @@
 
 * Summary
 
+A more modern visual representation for =tab-bar-mode= tabs. Note that this does
+not affect =tab-line-mode= tabs.
+
+[[./screenshot.png]]
+
 * Installation
 
-This package is not on MELPA.
+This package is not on MELPA, so you must install it manually or use something
+like [[https://github.com/progfolio/elpaca][elpaca]].
+
+** Elpaca Installation
+
+#+begin_src emacs-lisp
+(use-package modern-tab-bar
+  :ensure (modern-tab-bar :host github :repo "aaronjensen/emacs-modern-tab-bar" :protocol ssh)
+  :init
+  (setq tab-bar-show t
+        tab-bar-new-button nil
+        tab-bar-close-button-show nil)
+
+  (modern-tab-bar-mode))
+#+end_src
+
+* Customization
+
+=M-x customize-group modern-tab-bar=
+
+The faces in the modern-tab-bar-faces group can be adjusted or themed as well.

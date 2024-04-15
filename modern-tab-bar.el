@@ -3,7 +3,9 @@
 ;; Copyright (C) 2024 Aaron Jensen
 
 ;; Author: Aaron Jensen <aaronjensen@gmail.com>
+;; URL: https://github.com/aaronjensen/emacs-modern-tab-bar
 ;; Version: 0.0.1
+;; Package-Requires: ((emacs "28.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

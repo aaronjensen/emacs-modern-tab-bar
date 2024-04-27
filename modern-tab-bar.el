@@ -124,6 +124,14 @@ the formatted tab name to display in the tab bar."
 Ensures that the last tab's face does not extend to the end of the tab bar."
   " ")
 
+(defun modern-tab-bar--enable-theme (theme)
+  "Ensures that the modern-tab-bar theme is enabled."
+  (when (and (not (eq theme 'modern-tab-bar))
+             (or (not (member 'modern-tab-bar custom-enabled-themes))
+                 (eq 'modern-tab-bar (car (last custom-enabled-themes)))))
+    (enable-theme 'modern-tab-bar)
+    (tab-bar--update-tab-bar-lines t)))
+
 ;;;###autoload
 (define-minor-mode modern-tab-bar-mode
   "Global minor mode that changes the style of the tab bar to look more modern."
@@ -131,10 +139,13 @@ Ensures that the last tab's face does not extend to the end of the tab bar."
   :global t
   (cond (modern-tab-bar-mode
          (enable-theme 'modern-tab-bar)
+         (add-hook 'enable-theme-functions #'modern-tab-bar--enable-theme)
          (advice-add #'tab-bar--format-tab :around #'modern-tab-bar--format-tab))
         (t
-         (disable-theme 'modern-tab-bar)
-         (advice-remove #'tab-bar--format-tab #'modern-tab-bar--format-tab))))
+         (advice-remove #'tab-bar--format-tab #'modern-tab-bar--format-tab)
+         (remove-hook 'enable-theme-functions #'modern-tab-bar--enable-theme)
+         (disable-theme 'modern-tab-bar)))
+  (tab-bar--update-tab-bar-lines t))
 
 (provide 'modern-tab-bar)
 ;;; modern-tab-bar.el ends here

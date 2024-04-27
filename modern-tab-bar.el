@@ -26,8 +26,6 @@
 
 ;;; Code:
 
-(require 'face-remap)
-
 (defgroup modern-tab-bar nil
   "Modern tab bar."
   :group 'tools
@@ -39,6 +37,12 @@
 
 See the documentation of `tab-bar-format' for more information."
   :type 'sexp)
+
+(defcustom modern-tab-bar-tab-name-format-function #'tab-bar-tab-name-format-default
+  "Function to format a tab name.
+Function gets two arguments, the tab and its number, and should return
+the formatted tab name to display in the tab bar."
+  :type 'function)
 
 (defcustom modern-tab-bar-tab-horizontal-padding 8
   "Horizontal padding for tabs."
@@ -73,23 +77,19 @@ See the documentation of `tab-bar-format' for more information."
                                         :inherit modern-tab-bar)))
   "Modern tab bar separator")
 
-(defvar modern-tab-bar--original-tab-bar-separator nil)
-(defvar modern-tab-bar--original-tab-bar-tab-name-format-function nil)
-(defvar modern-tab-bar--original-tab-bar-format nil)
-(defvar modern-tab-bar--original-tab-bar-auto-width nil)
+(deftheme modern-tab-bar
+  "Modern tab bar theme")
 
-(defvar modern-tab-bar--face-remappings
-  '((tab-bar modern-tab-bar)
-    (tab-bar-tab modern-tab-bar-tab)
-    (tab-bar-tab-inactive modern-tab-bar-tab-inactive)))
+(custom-theme-set-faces 'modern-tab-bar
+                        '(tab-bar ((t (:inherit modern-tab-bar))))
+                        '(tab-bar-tab ((t (:inherit modern-tab-bar-tab))))
+                        '(tab-bar-tab-inactive ((t (:inherit modern-tab-bar-tab-inactive)))))
 
-(defun modern-tab-bar--remap-faces ()
-  (dolist (face-remapping modern-tab-bar--face-remappings)
-    (apply #'face-remap-set-base face-remapping)))
-
-(defun modern-tab-bar--remove-face-remappings ()
-  (dolist (face-remapping modern-tab-bar--face-remappings)
-    (face-remap-reset-base (car face-remapping))))
+(custom-theme-set-variables 'modern-tab-bar
+                            '(tab-bar-format modern-tab-bar-format)
+                            '(tab-bar-separator modern-tab-bar-separator)
+                            '(tab-bar-tab-name-format-function #'modern-tab-bar--tab-bar-name-format)
+                            '(tab-bar-auto-width nil))
 
 (defun modern-tab-bar--format-tab (orig-fn tab i)
   (let* ((tabs (funcall tab-bar-tabs-function))
@@ -114,7 +114,7 @@ See the documentation of `tab-bar-format' for more information."
   (concat
    (propertize " " 'display `((space :width (,modern-tab-bar-tab-horizontal-padding)))
                'face (funcall tab-bar-tab-face-function tab))
-   (funcall modern-tab-bar--original-tab-bar-tab-name-format-function tab i)
+   (funcall modern-tab-bar-tab-name-format-function tab i)
    (propertize " " 'display `((space :width (,modern-tab-bar-tab-horizontal-padding)))
                'face (funcall tab-bar-tab-face-function tab))))
 
@@ -130,37 +130,10 @@ Ensures that the last tab's face does not extend to the end of the tab bar."
   :init-value nil
   :global t
   (cond (modern-tab-bar-mode
-         (dolist (buf (buffer-list))
-           (with-current-buffer buf
-             (modern-tab-bar--remap-faces)))
-
-         (setq modern-tab-bar--original-tab-bar-format tab-bar-format)
-         (setq tab-bar-format modern-tab-bar-format)
-
-         (setq modern-tab-bar--original-tab-bar-separator tab-bar-separator)
-         (setq tab-bar-separator modern-tab-bar-separator)
-
-         (setq modern-tab-bar--original-tab-bar-tab-name-format-function tab-bar-tab-name-format-function)
-         (setq tab-bar-tab-name-format-function #'modern-tab-bar--tab-bar-name-format)
-
-         (setq modern-tab-bar--original-tab-bar-auto-width tab-bar-auto-width)
-         (setq tab-bar-auto-width nil)
-
-         (add-hook 'after-change-major-mode-hook #'modern-tab-bar--remap-faces)
-
+         (enable-theme 'modern-tab-bar)
          (advice-add #'tab-bar--format-tab :around #'modern-tab-bar--format-tab))
         (t
-         (dolist (buf (buffer-list))
-           (with-current-buffer buf
-             (modern-tab-bar--remove-face-remappings)))
-
-         (setq tab-bar-format modern-tab-bar--original-tab-bar-format)
-         (setq tab-bar-separator modern-tab-bar--original-tab-bar-separator)
-         (setq tab-bar-tab-name-format-function modern-tab-bar--original-tab-bar-tab-name-format-function)
-         (setq tab-bar-auto-width modern-tab-bar--original-tab-bar-auto-width)
-
-         (remove-hook 'after-change-major-mode-hook #'modern-tab-bar--remap-faces)
-
+         (disable-theme 'modern-tab-bar)
          (advice-remove #'tab-bar--format-tab #'modern-tab-bar--format-tab))))
 
 (provide 'modern-tab-bar)

@@ -7,10 +7,29 @@ not affect =tab-line-mode= tabs.
 
 [[./screenshot.png]]
 
+* Usage
+
+#+begin_src emacs-lisp
+(modern-tab-bar-mode 1)
+#+end_src
+
+Ensure that =modern-tab-bar-mode= is enabled after your primary theme.
+
+You will need to remove or revisit any customizations you have for the variables
+that =modern-tab-bar= sets via a custom theme. Note that your customizations may
+take precedence over =modern-tab-bar=, depending on how they are set.
+
+- =tab-bar-format= :: Set =modern-tab-bar-format= instead
+- =tab-bar-separator= :: Set =modern-tab-bar-separator= instead
+- =tab-bar-tab-name-format-function= :: Set
+  =modern-tab-bar-tab-name-format-function= instead
+- =tab-bar-auto-width= :: This must be =nil= or it can cause Emacs to hang
+
 * Installation
 
 This package is not on MELPA, so you must install it manually or use something
 like [[https://github.com/progfolio/elpaca][elpaca]].
+
 
 ** Elpaca Installation
 

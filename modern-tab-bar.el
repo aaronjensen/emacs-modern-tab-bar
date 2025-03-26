@@ -63,13 +63,16 @@ the formatted tab name to display in the tab bar."
                               :background "#E0E0E0"
                               :box (:line-width (12 . 8) :color nil :style flat-button)
                               :inherit (variable-pitch default))))
-  "Modern tab bar face")
+  "Modern tab bar face.")
 
 (defface modern-tab-bar-tab '((t (:background "#FFFFFF")))
-  "Modern tab bar tab face")
+  "Modern tab bar tab face.")
 
 (defface modern-tab-bar-tab-inactive '((t (:foreground "#333333")))
-  "Modern tab bar inactive tab face")
+  "Modern tab bar inactive tab face.")
+
+(defface modern-tab-bar-tab-highlight '((t (:background "#D0D0D0")))
+  "Modern tab bar highlight tab face.")
 
 (defface modern-tab-bar-separator '((t (
                                         :foreground "#AEAEAE"
@@ -83,7 +86,8 @@ the formatted tab name to display in the tab bar."
 (custom-theme-set-faces 'modern-tab-bar
                         '(tab-bar ((t (:inherit modern-tab-bar))))
                         '(tab-bar-tab ((t (:inherit modern-tab-bar-tab))))
-                        '(tab-bar-tab-inactive ((t (:inherit modern-tab-bar-tab-inactive)))))
+                        '(tab-bar-tab-inactive ((t (:inherit modern-tab-bar-tab-inactive))))
+                        '(tab-bar-tab-highlight ((t (:inherit modern-tab-bar-tab-highlight)))))
 
 (custom-theme-set-variables 'modern-tab-bar
                             '(tab-bar-format modern-tab-bar-format)
@@ -111,12 +115,14 @@ the formatted tab name to display in the tab bar."
 
 (defun modern-tab-bar--tab-bar-name-format (tab i)
   "Adds padding to both sides of tab names."
-  (concat
-   (propertize " " 'display `((space :width (,modern-tab-bar-tab-horizontal-padding)))
-               'face (funcall tab-bar-tab-face-function tab))
-   (funcall modern-tab-bar-tab-name-format-function tab i)
-   (propertize " " 'display `((space :width (,modern-tab-bar-tab-horizontal-padding)))
-               'face (funcall tab-bar-tab-face-function tab))))
+  (tab-bar-tab-name-format-mouse-face
+   (concat
+    (propertize " " 'display `((space :width (,modern-tab-bar-tab-horizontal-padding)))
+                'face (funcall tab-bar-tab-face-function tab))
+    (funcall modern-tab-bar-tab-name-format-function tab i)
+    (propertize " " 'display `((space :width (,modern-tab-bar-tab-horizontal-padding)))
+                'face (funcall tab-bar-tab-face-function tab)))
+   tab i))
 
 (defun modern-tab-bar-suffix ()
   "Empty space.

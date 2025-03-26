@@ -122,10 +122,12 @@ the formatted tab name to display in the tab bar."
           (funcall modern-tab-bar-tab-name-format-function tab i)
           (propertize " " 'display `((space :width (,modern-tab-bar-tab-horizontal-padding)))
                       'face (funcall tab-bar-tab-face-function tab)))))
-    ;; Emacs 30 support - Aaron, Wed Mar 26 2025
-    (if (fboundp #'tab-bar-tab-name-format-mouse-face)
+    (if (and
+         ;; Emacs 30 support - Aaron, Wed Mar 26 2025
+         (fboundp #'tab-bar-tab-name-format-mouse-face)
+         (not (eq (car tab) 'current-tab)))
         (tab-bar-tab-name-format-mouse-face name tab i)
-      name)))
+      (propertize name 'mouse-face nil))))
 
 (defun modern-tab-bar-suffix ()
   "Empty space.

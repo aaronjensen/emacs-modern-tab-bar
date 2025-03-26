@@ -115,14 +115,17 @@ the formatted tab name to display in the tab bar."
 
 (defun modern-tab-bar--tab-bar-name-format (tab i)
   "Adds padding to both sides of tab names."
-  (tab-bar-tab-name-format-mouse-face
-   (concat
-    (propertize " " 'display `((space :width (,modern-tab-bar-tab-horizontal-padding)))
-                'face (funcall tab-bar-tab-face-function tab))
-    (funcall modern-tab-bar-tab-name-format-function tab i)
-    (propertize " " 'display `((space :width (,modern-tab-bar-tab-horizontal-padding)))
-                'face (funcall tab-bar-tab-face-function tab)))
-   tab i))
+  (let ((name
+         (concat
+          (propertize " " 'display `((space :width (,modern-tab-bar-tab-horizontal-padding)))
+                      'face (funcall tab-bar-tab-face-function tab))
+          (funcall modern-tab-bar-tab-name-format-function tab i)
+          (propertize " " 'display `((space :width (,modern-tab-bar-tab-horizontal-padding)))
+                      'face (funcall tab-bar-tab-face-function tab)))))
+    ;; Emacs 30 support - Aaron, Wed Mar 26 2025
+    (if (fboundp #'tab-bar-tab-name-format-mouse-face)
+        (tab-bar-tab-name-format-mouse-face name tab i)
+      name)))
 
 (defun modern-tab-bar-suffix ()
   "Empty space.
